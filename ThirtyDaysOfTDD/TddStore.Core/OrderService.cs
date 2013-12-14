@@ -1,5 +1,6 @@
 using System;
-
+using System.Linq;
+using TddStore.Core.Exceptions;
 namespace TddStore.Core
 {
     public class OrderService
@@ -14,6 +15,10 @@ namespace TddStore.Core
         public object PlaceOrder(Guid customerId, ShoppingCart shoppingCart)
         {
             var order = new Order();
+            if (shoppingCart.Items.Where(el => el.Quantity == 0).Count() > 0)
+            {
+                throw new InvalidOrderException();
+            }
             return _orderDataService.Save(order);
         }
     }
