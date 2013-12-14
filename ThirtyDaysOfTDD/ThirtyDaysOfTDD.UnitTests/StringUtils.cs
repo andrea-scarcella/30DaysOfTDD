@@ -9,6 +9,10 @@ namespace ThirtyDaysOfTDD.UnitTests
     {
         public int FindNumberOfOccurences(string sentenceToScan, string characterToScanFor)
         {
+            if ((characterToScanFor??"").Length>1)
+            {
+                throw new ArgumentException(""); 
+            }
             return (sentenceToScan??"").Where(c => c == (characterToScanFor ?? "").FirstOrDefault()).Count();
             //throw new NotImplementedException();
         }
