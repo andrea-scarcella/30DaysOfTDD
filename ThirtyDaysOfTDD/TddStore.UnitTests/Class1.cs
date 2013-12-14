@@ -23,9 +23,9 @@ namespace TddStore.UnitTests
             sc.Items.Add(new ShoppingCartItem { ItemId = Guid.NewGuid(), Quantity = 1 });
             var customerId = Guid.NewGuid();
             var expectedOrderId = Guid.NewGuid();
-           
+
             Mock.Arrange(() => _ods.Save(Arg.IsAny<Order>())).Returns(expectedOrderId).OccursOnce();
-           
+
             //Act
             var result = _os.PlaceOrder(customerId, sc);
             //Assert
@@ -35,21 +35,31 @@ namespace TddStore.UnitTests
 
         }
         [Test]
-        [ExpectedException(typeof(InvalidOrderException))]
+        //#AS:2013/12/14: Mock.Assert is never run (exception is handled by nunit)
+        //[ExpectedException(typeof(InvalidOrderException))]
         public void WhenAUserAttemptsToOrderAnItemWithAQuantityOfZeroThrowInvalidOrderException()
         {
+            try
+            {
 
-            var sc = new ShoppingCart();
-            sc.Items.Add(new ShoppingCartItem { Quantity = 0, ItemId = Guid.NewGuid() });
-        
-            var expectedOrderId = Guid.NewGuid();
-            Mock.Arrange(() => _ods.Save(Arg.IsAny<Order>())).Returns(expectedOrderId).OccursNever();
+                var sc = new ShoppingCart();
+                sc.Items.Add(new ShoppingCartItem { Quantity = 0, ItemId = Guid.NewGuid() });
 
-            var customerId = Guid.NewGuid();
-            //Act
-            var result = _os.PlaceOrder(customerId, sc);
+                var expectedOrderId = Guid.NewGuid();
+                Mock.Arrange(() => _ods.Save(Arg.IsAny<Order>())).Returns(expectedOrderId).OccursNever();
+
+                var customerId = Guid.NewGuid();
+                //Act
+                var result = _os.PlaceOrder(customerId, sc);
+            }
             //Assert
-            Mock.Assert(_ods);
+            catch (InvalidOrderException)
+            {
+                Mock.Assert(_ods);
+                Assert.Pass();
+            }
+            Assert.Fail();
+
 
         }
         [TestFixtureSetUp]
