@@ -39,6 +39,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ICustomerService.cs" />
+    <Compile Include="Customer.cs" />
     <Compile Include="Exceptions\InvalidOrderException.cs" />
     <Compile Include="IOrderDataService.cs" />
     <Compile Include="Order.cs" />

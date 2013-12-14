@@ -15,6 +15,7 @@ namespace TddStore.UnitTests
     {
         private OrderService _os;
         private IOrderDataService _ods;
+        private ICustomerService _cs;
         [Test]
         public void WhenUserPlacesACorrectOrderThenAnOrderNumberShouldBeReturned()
         {
@@ -62,12 +63,26 @@ namespace TddStore.UnitTests
 
 
         }
+        [Test]
+        public void WhenAValidCustomerPlacesAValidOrderAnTheOrderServiceShouldBeAbleToGetACustomerFromTheCustomerService()
+        {
+            //Arrange
+            var shoppingCart = new ShoppingCart();
+            shoppingCart.Items.Add(new ShoppingCartItem { ItemId = Guid.NewGuid(), Quantity = 1 });
+            var customerId = Guid.NewGuid();
+            var expectedOrderId = Guid.NewGuid();
+            var customerToReturn = new Customer() { Id = customerId, FirstName = "f", LastName = "l" };
+            Mock.Arrange(() => _cs.GetCustomer(Arg.IsAny<Guid>())).Returns(customerToReturn).OccursOnce();
+            //Act
+            _os.PlaceOrder(customerId, shoppingCart);
+            Mock.Assert(_cs);
+        }
         [TestFixtureSetUp]
         public void Setup()
         {
             _ods = Mock.Create<IOrderDataService>();
-            _os = new OrderService(_ods);
-
+            _cs = Mock.Create<ICustomerService>();
+            _os = new OrderService(_ods, _cs);
         }
     }
 }
