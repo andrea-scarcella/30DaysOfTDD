@@ -10,29 +10,48 @@ namespace ThirtyDaysOfTDD.UnitTests
     [TestFixture]
     public class StringUtilsTests
     {
-        [Test]
-        public void ShouldBeAbleToCountNumberOfLettersInSimpleSentence()
+
+
+        [TestFixtureSetUp]
+        public void SetupStringUtilTests()
         {
-            var sentenceToScan = "TDD is awesome!";
-            var characterToScanFor = "e";
-            var expectedResult = 2;
-            var stringUtils = new StringUtils();
+            _stringUtils = new StringUtils();
+        }
 
-            int result = stringUtils.FindNumberOfOccurences(sentenceToScan, characterToScanFor);
 
+        [Test, Sequential]
+        public void ShouldBeAbleToCountNumberOfLettersInASentence(
+         [Values("TDD is awesome!", "Once is unique, twice is a coincidence, three times is a pattern.!")]   string sentenceToScan,
+         [Values("e", "n")]   string characterToScanFor,
+           [Values(2, 5)] int expectedResult)
+        {
+            int result = _stringUtils.FindNumberOfOccurences(sentenceToScan, characterToScanFor);
             Assert.AreEqual(expectedResult, result);
         }
-        [Test]
-        public void ShouldBeAbleToCountNumberOfLettersInAComplexSentence()
-        {
-            var sentenceToScan = "Once is unique, twice is a coincidence, three times is a pattern.!";
-            var characterToScanFor = "n";
-            var expectedResult = 5;
-            var stringUtils = new StringUtils();
-            int result = stringUtils.FindNumberOfOccurences(sentenceToScan, characterToScanFor);
+        //[Test]
+        //public void ShouldBeAbleToCountNumberOfLettersInSimpleSentence()
+        //{
+        //    var sentenceToScan = "TDD is awesome!";
+        //    var characterToScanFor = "e";
+        //    var expectedResult = 2;
+        //    var stringUtils = new StringUtils();
 
-            Assert.AreEqual(expectedResult, result);
-        }
+        //    int result = stringUtils.FindNumberOfOccurences(sentenceToScan, characterToScanFor);
+
+        //    Assert.AreEqual(expectedResult, result);
+        //}
+        //[Test]
+        //public void ShouldBeAbleToCountNumberOfLettersInAComplexSentence()
+        //{
+        //    var sentenceToScan = "Once is unique, twice is a coincidence, three times is a pattern.!";
+        //    var characterToScanFor = "n";
+        //    var expectedResult = 5;
+        //    var stringUtils = new StringUtils();
+        //    int result = stringUtils.FindNumberOfOccurences(sentenceToScan, characterToScanFor);
+
+        //    Assert.AreEqual(expectedResult, result);
+        //}
+        
         [Test]
         [ExpectedException(typeof(ArgumentException))]
         public void ShouldGetAnArgumentExceptionWhenCharacterToScanForIsLargerThanOneCharacter()
@@ -43,5 +62,7 @@ namespace ThirtyDaysOfTDD.UnitTests
 
             stringUtils.FindNumberOfOccurences(sentenceToScan, characterToScanFor);
         }
+
+        private StringUtils _stringUtils { get; set; }
     }
 }
