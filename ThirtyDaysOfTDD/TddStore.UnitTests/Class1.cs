@@ -21,12 +21,14 @@ namespace TddStore.UnitTests
             var customerId = Guid.NewGuid();
             var expectedOrderId = Guid.NewGuid();
             var ods = Mock.Create<IOrderDataService>();
-            Mock.Arrange(() => ods.Save(Arg.IsAny<Order>())).Returns(expectedOrderId);
+            Mock.Arrange(() => ods.Save(Arg.IsAny<Order>())).Returns(expectedOrderId).OccursOnce();
             OrderService os = new OrderService(ods);
             //Act
             var result = os.PlaceOrder(customerId, sc);
             //Assert
             Assert.AreEqual(expectedOrderId, result);
+            Mock.Assert(ods);
+
 
         }
     }
