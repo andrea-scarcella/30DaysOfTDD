@@ -26,18 +26,36 @@ namespace TddStore.Core
                 throw new InvalidOrderException();
             }
             var customer = _customerService.GetCustomer(customerId);
+            PlaceOrderWithFulfillmentService(shoppingCart, customer);
+            var order = new Order();
+            return _orderDataService.Save(order);
+        }
 
-            var orderFulfillmentSessionId = _orderFulfillmentService.OpenSession(USERNAME, PASSWORD);
+        private void PlaceOrderWithFulfillmentService(ShoppingCart shoppingCart, Customer customer)
+        {
+            //Open Session
+            var orderFulfillmentSessionId = OpenOrderFulfillmentSession();
             var firstItemId = shoppingCart.Items.First().ItemId;
             var firstItemQuantity = shoppingCart.Items.First().Quantity;
+            //Check Inventory
             var itemIsInInventory = _orderFulfillmentService.IsInInventory(orderFulfillmentSessionId, firstItemId, firstItemQuantity);
             var orderForFulfillmentService = new Dictionary<Guid, int>();
             orderForFulfillmentService.Add(firstItemId, firstItemQuantity);
-
+            //Place Order
             _orderFulfillmentService.PlaceOrder(orderFulfillmentSessionId, orderForFulfillmentService, customer.ShippingAddress.ToString());
+            //Close session
+            CloseOrderFulfillmentService(orderFulfillmentSessionId);
+        }
+
+        private void CloseOrderFulfillmentService(Guid orderFulfillmentSessionId)
+        {
             _orderFulfillmentService.CloseSession(orderFulfillmentSessionId);
-            var order = new Order();
-            return _orderDataService.Save(order);
+        }
+
+        private Guid OpenOrderFulfillmentSession()
+        {
+            var orderFulfillmentSessionId = _orderFulfillmentService.OpenSession(USERNAME, PASSWORD);
+            return orderFulfillmentSessionId;
         }
     }
 }
