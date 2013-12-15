@@ -49,12 +49,11 @@ namespace TddStore.Core
 
         private Dictionary<Guid, int> CheckInventoryLevels(Guid orderFulfillmentSessionId, ShoppingCart shoppingCart)
         {
-            var firstItemId = shoppingCart.Items.First().ItemId;
-            var firstItemQuantity = shoppingCart.Items.First().Quantity;
-            //Check Inventory
-            var itemIsInInventory = _orderFulfillmentService.IsInInventory(orderFulfillmentSessionId, firstItemId, firstItemQuantity);
+
+            var itemsInInventory = shoppingCart.Items.Where(item => _orderFulfillmentService.IsInInventory(orderFulfillmentSessionId, item.ItemId, item.Quantity));
             var orderForFulfillmentService = new Dictionary<Guid, int>();
-            orderForFulfillmentService.Add(firstItemId, firstItemQuantity);
+            itemsInInventory.ToList().ForEach(item => { orderForFulfillmentService.Add(item.ItemId, item.Quantity); });
+
             return orderForFulfillmentService;
         }
 
