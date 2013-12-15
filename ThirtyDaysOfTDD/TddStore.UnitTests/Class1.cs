@@ -25,7 +25,13 @@ namespace TddStore.UnitTests
             sc.Items.Add(new ShoppingCartItem { ItemId = Guid.NewGuid(), Quantity = 1 });
             var customerId = Guid.NewGuid();
             var expectedOrderId = Guid.NewGuid();
+            var orderFulfillmentSessionId = Guid.NewGuid();
+            Mock.Arrange(() => _ofs.OpenSession(Arg.IsAny<string>(), Arg.IsAny<string>())).Returns(orderFulfillmentSessionId);
+            var itemId = Guid.NewGuid();
+            Mock.Arrange(() => _ofs.IsInInventory(orderFulfillmentSessionId, itemId, 1)).Returns(true);
 
+            Mock.Arrange(() => _ofs.PlaceOrder(orderFulfillmentSessionId, Arg.IsAny<IDictionary<Guid, int>>(), Arg.IsAny<string>())).Returns(true);
+            Mock.Arrange(() => _ofs.CloseSession(orderFulfillmentSessionId));
             Mock.Arrange(() => _ods.Save(Arg.IsAny<Order>())).Returns(expectedOrderId).OccursOnce();
             var customerToReturn = new Customer() { Id = customerId, FirstName = "f", LastName = "l" };
             Mock.Arrange(() => _cs.GetCustomer(customerId)).Returns(customerToReturn).OccursOnce();
